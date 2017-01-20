@@ -219,8 +219,9 @@ Optionally, you can train the model using VM instances running on
   ```
 
   Alternatively, you may attach a shared read-only persistent disk which
-  has the 'data-dir' directory containing the same training data. The
-  attached disk is mounted by the training script in the next step.
+  has the `data-dir` directory containing the same training data. The
+  attached disk is mounted on `$HOME/data-pd` by the training script in
+  the next step.
 
 4. Start training
 
