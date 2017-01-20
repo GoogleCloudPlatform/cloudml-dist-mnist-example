@@ -99,7 +99,7 @@ def run_training():
     server.join()
 
   # Start a master/worker node
-  if job_name == 'master' or job_name == 'worker': # Worker node
+  if job_name == 'master' or job_name == 'worker':
     is_chief = (job_name == 'master')
 
     with tf.Graph().as_default() as graph:
