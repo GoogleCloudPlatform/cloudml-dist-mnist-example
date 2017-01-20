@@ -23,8 +23,15 @@ export TF_CONFIG=$(sed "s/__INDEX__/$INDEX/;s/__ROLE__/$ROLE/" tf_config.json)
 
 LOG_DIR="/tmp/logs"
 MODEL_DIR="/tmp/model"
-DATA_DIR="$HOME/data-pd"
 WORK_FLAGS="--batch_size=100 --max_steps=10000 --local_data"
+DATA_DIR="$HOME/data-pd/data-dir"
+
+DATA_DISK="/dev/disk/by-id/google-persistent-disk-1"
+DATA_MOUNT="$HOME/data-pd"
+if [[ -b $DATA_DISK ]] && df $DATA_DISK | grep -qvE "(^Filesystem|$DATA_MOUNT)"; then
+  mkdir -p $DATA_MOUNT
+  sudo mount -o ro,noload $DATA_DISK $DATA_MOUNT
+fi
 
 rm -rf $LOG_DIR
 mkdir -p $LOG_DIR $MODEL_DIR

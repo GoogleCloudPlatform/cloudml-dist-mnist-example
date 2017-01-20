@@ -210,13 +210,17 @@ Optionally, you can train the model using VM instances running on
   Run the following commands on master-0, worker-0 and worker-1.
 
   ```
-  $ mkdir $HOME/data-pd
-  $ cd $HOME/data-pd
+  $ mkdir $HOME/data-pd/data-dir
+  $ cd $HOME/data-pd/data-dir
   $ wget http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz
   $ wget http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz
   $ wget http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz
   $ wget http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz
   ```
+
+  Alternatively, you may attach a shared read-only persistent disk which
+  has the 'data-dir' directory containing the same training data. The
+  attached disk is mounted by the training script in the next step.
 
 4. Start training
 
@@ -227,7 +231,7 @@ Optionally, you can train the model using VM instances running on
   $ gcloud config set compute/zone us-east1-c
   $ git clone https://github.com/GoogleCloudPlatform/cloudml-dist-mnist-example.git
   $ cd cloudml-dist-mnist-example
-  $ ./scrpits/start-dist-mnist.sh
+  $ ./scripts/start-training.sh
   ```
 
   Note: `us-east1-c` should be the zone of instances you have created.
