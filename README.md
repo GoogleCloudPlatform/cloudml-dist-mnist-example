@@ -3,7 +3,7 @@
 Disclaimer: This is not an official Google product.
 
 This is an example to demonstrate how to write distributed TensorFlow code
- which can be used on both Cloud Machine Leraning and Google Compute Engine
+ which can be used on both Cloud Machine Learning and Google Compute Engine
  instances. This is deliberately made simple and straightforward to highlight
  essential aspects. If you are interested in a more sophisticated and
  practical example, see [this one][1].
