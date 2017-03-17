@@ -20,6 +20,13 @@ import time
 import numpy as np
 import tensorflow as tf
 
+from tensorflow.python.saved_model import builder
+from tensorflow.python.saved_model import signature_def_utils
+from tensorflow.python.saved_model import signature_constants
+from tensorflow.python.saved_model import tag_constants
+
+from tensorflow.core.protobuf import meta_graph_pb2
+
 import mnist_model
 import mnist
 
@@ -60,10 +67,29 @@ def export_model(last_checkpoint):
     output_key = tf.identity(input_key)
 
     # Define API inputs/outputs object
-    inputs = {'key': input_key.name, 'image': x.name}
-    outputs = {'key': output_key.name, 'scores': p.name}
-    tf.add_to_collection('inputs', json.dumps(inputs))
-    tf.add_to_collection('outputs', json.dumps(outputs))
+    inputs = {'key': input_key, 'image': x}
+    input_signatures = {}
+    for key, val in inputs.iteritems():
+      predict_input_tensor = meta_graph_pb2.TensorInfo()
+      predict_input_tensor.name = val.name
+      predict_input_tensor.dtype = val.dtype.as_datatype_enum
+      input_signatures[key] = predict_input_tensor
+
+    outputs = {'key': output_key, 'scores': p}
+    output_signatures = {}
+    for key, val in outputs.iteritems():
+      predict_output_tensor = meta_graph_pb2.TensorInfo()
+      predict_output_tensor.name = val.name
+      predict_output_tensor.dtype = val.dtype.as_datatype_enum
+      output_signatures[key] = predict_output_tensor
+
+    inputs_name, outputs_name = {}, {}
+    for key, val in inputs.iteritems():
+      inputs_name[key] = val.name
+    for key, val in outputs.iteritems():
+      outputs_name[key] = val.name
+    tf.add_to_collection('inputs', json.dumps(inputs_name))
+    tf.add_to_collection('outputs', json.dumps(outputs_name))
 
     init_op = tf.global_variables_initializer()
     sess.run(init_op)
@@ -71,9 +97,19 @@ def export_model(last_checkpoint):
     # Restore the latest checkpoint and save the model
     saver = tf.train.Saver()
     saver.restore(sess, last_checkpoint)
-    saver.export_meta_graph(os.path.join(MODEL_DIR, 'export.meta'))
-    saver.save(sess, os.path.join(MODEL_DIR, 'export'),
-               write_meta_graph=False)
+
+    predict_signature_def = signature_def_utils.build_signature_def(
+        input_signatures, output_signatures,
+        signature_constants.PREDICT_METHOD_NAME)
+    build = builder.SavedModelBuilder(MODEL_DIR)
+    build.add_meta_graph_and_variables(
+        sess, [tag_constants.SERVING],
+        signature_def_map={
+            signature_constants.DEFAULT_SERVING_SIGNATURE_DEF_KEY:
+                predict_signature_def
+        },
+        assets_collection=tf.get_collection(tf.GraphKeys.ASSET_FILEPATHS))
+    build.save()
 
 
 def run_training():
