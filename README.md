@@ -19,7 +19,7 @@ This is an example to demonstrate how to write distributed TensorFlow code
 ## Prerequisites
 1. A Google Cloud Platform Account
 2. [A new Google Cloud Platform Project][4] for this lab with billing enabled
-3. Enable the Cloud Machine Learning API from [the API Manager][5]
+3. Enable the Cloud Machine Learning Engine API from [the API Manager][5]
 
 [4]: https://console.developers.google.com/project
 [5]: https://console.developers.google.com
@@ -35,24 +35,14 @@ In this section you will start your [Google Cloud Shell][6] and clone the
 
  <img src="docs/img/cloud-shell.png" width="300">
 
-3. Install Cloud Machine Learning SDK and initialize the project:
+3. List the models to verify that the command returns an empty list:
 
   ```
-  $ sudo pip install --upgrade pillow
-  $ curl https://storage.googleapis.com/cloud-ml/scripts/setup_cloud_shell.sh | bash
-  $ export PATH=${HOME}/.local/bin:${PATH}
-  $ gcloud beta ml init-project
-  Cloud ML needs to add its service accounts to your project
-  (Your project ID) as Editors. This will enable Cloud Machine
-   Learning to access resources in your project when running your
-  training and prediction jobs.
-
-  Do you want to continue (Y/n)? Y
-  ...
+  $ gcloud ml-engine models list
+  Listed 0 items.
   ```
 
-  Note: The first pip command is a workaround to avoid a version compatibility
-  issue of the Pillow module.
+  Note: After you start creating models, you can see them listed by using this command.
 
 4. Clone the lab repository in your cloud shell, then `cd` into that dir:
 
@@ -81,7 +71,7 @@ In this section you will start your [Google Cloud Shell][6] and clone the
 
   ```
   $ JOB_ID="${USER}_$(date +%Y%m%d_%H%M%S)"
-  $ gcloud beta ml jobs submit training ${JOB_ID} \
+  $ gcloud ml-engine jobs submit training ${JOB_ID} \
       --package-path trainer \
       --module-name trainer.task \
       --staging-bucket "${TRAIN_BUCKET}" \
@@ -135,13 +125,13 @@ In this section you will start your [Google Cloud Shell][6] and clone the
 
   ```
   $ MODEL_NAME=MNIST
-  $ gcloud beta ml models create ${MODEL_NAME}
+  $ gcloud ml-engine models create ${MODEL_NAME} --regions us-central1
   $ VERSION_NAME=v1
-  $ gcloud beta ml versions create \
+  $ gcloud ml-engine versions create \
       --origin $TRAIN_BUCKET/${JOB_ID}/model \
       --model ${MODEL_NAME} \
       ${VERSION_NAME}
-  $ gcloud beta ml versions set-default --model ${MODEL_NAME} ${VERSION_NAME}
+  $ gcloud ml-engine versions set-default --model ${MODEL_NAME} ${VERSION_NAME}
   ```
 
   Note: `MODEL_NAME` ane `VERSION_NAME` can be arbitrary, but you can't
