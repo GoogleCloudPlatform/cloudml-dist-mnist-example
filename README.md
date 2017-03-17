@@ -151,7 +151,7 @@ In this section you will start your [Google Cloud Shell][6] and clone the
 3. Submot an online prediction request.
 
   ```
-  $ gcloud beta ml predict --model ${MODEL_NAME} --json-instances request.json
+  $ gcloud ml-engine predict --model ${MODEL_NAME} --json-instances request.json
 KEY  SCORES
 0    [5.491162212434286e-12, 1.4754857058374427e-10, 5.0145921193234244e-08, 9.679915820015594e-07, 1.1807515902517718e-11, 2.1074924791419924e-11, 7.73946938943083e-19, 0.9999980926513672, 6.3151288642870895e-09, 9.910554581438191e-07]
 1    [2.9550360380881102e-08, 2.0272503320484248e-07, 0.9999997615814209, 5.557484472618057e-10, 7.705624062003674e-14, 1.2500921352492488e-14, 2.9164962112027126e-11, 3.5212078648109036e-15, 9.194990879812792e-10, 9.704423389468017e-17]
@@ -186,10 +186,9 @@ Optionally, you can train the model using VM instances running on
   Open ssh terminal and run the following commands on all instances.
 
   ```
-  $ TF_BINARY_URL=https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.12.1-cp27-none-linux_x86_64.whl
   $ sudo apt-get update
   $ sudo apt-get install -y python-pip python-dev
-  $ sudo pip install --upgrade $TF_BINARY_URL
+  $ sudo pip install --upgrade tensorflow
   ```
 
 3. Download training data
