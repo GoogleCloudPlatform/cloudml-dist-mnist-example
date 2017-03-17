@@ -33,7 +33,7 @@ if [[ -b $DATA_DISK ]] && df $DATA_DISK | grep -qvE "(^Filesystem|$DATA_MOUNT)";
   sudo mount -o ro,noload $DATA_DISK $DATA_MOUNT
 fi
 
-rm -rf $LOG_DIR
-mkdir -p $LOG_DIR $MODEL_DIR
+rm -rf $LOG_DIR $MODEL_DIR
+mkdir -p $LOG_DIR
 python trainer/task.py $WORK_FLAGS \
        --data_dir=$DATA_DIR --log_dir=$LOG_DIR --model_dir=$MODEL_DIR
