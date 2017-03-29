@@ -11,10 +11,12 @@ This is an example to demonstrate how to write distributed TensorFlow code
 ## Products
 - [TensorFlow][2]
 - [Cloud Machine Learning][3]
+- [Cloud Datalab][9]
 
 [1]: https://github.com/GoogleCloudPlatform/cloudml-samples/tree/master/mnist/distributed/trainer
 [2]: https://www.tensorflow.org/
 [3]: https://cloud.google.com/ml/
+[9]: https://cloud.google.com/datalab/
 
 ## Prerequisites
 1. A Google Cloud Platform Account
@@ -167,11 +169,41 @@ KEY  SCORES
 
   The prediction results (scores for labels) are shown with the associated key values.
 
+## Using online prediction from Datalab
+
+You can use the Datalab notebook to demonstrate the online prediction feature in an interactive manner.
+
+1. Launch Datalab from the Cloud Shell.
+
+  ```
+  $ datalab create mydatalab
+  ...
+  Click on the *Web Preview* (up-arrow button at top-left), select *port 8081*, and start using Datalab.
+  ```
+  
+2. Select 'Preview on port 8081' from Web preview menu in the top-left corner to open a Datalab window.
+
+3. Open a new notebook and execute the following command.
+
+  ```
+  !git clone https://github.com/GoogleCloudPlatform/cloudml-dist-mnist-example
+  
+  Cloning into 'cloudml-dist-mnist-example'...
+  remote: Counting objects: 66, done.
+  remote: Compressing objects: 100% (15/15), done.
+  remote: Total 66 (delta 3), reused 0 (delta 0), pack-reused 51
+  Unpacking objects: 100% (66/66), done.
+  Checking connectivity... done.
+  ```
+  
+4. Go back to the notebook list window and open `Online prediction example.ipynb` which is in the `cloudml-dist-mnist-example/notebooks` folder.
+
+5. Follow [the instraction](https://github.com/GoogleCloudPlatform/cloudml-dist-mnist-example/blob/master/notebooks/Online%20prediction%20example.ipynb) in the notebook.
+
 ## (Option) Training on VM instances
 
 Optionally, you can train the model using VM instances running on
  Google Compute Engine(GCE).
-
 1. Launch four VM instances with the following options
 
   - Hostname: ps-1, master-0, worker-0, worker-1
