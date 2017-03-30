@@ -196,9 +196,9 @@ You can use the Datalab notebook to demonstrate the online prediction feature in
   Checking connectivity... done.
   ```
   
-4. Go back to the notebook list window and open `Online prediction example.ipynb` which is in the `cloudml-dist-mnist-example/notebooks` folder.
+4. Go back to the notebook list window and open `Online prediction example.ipynb` in `cloudml-dist-mnist-example/notebooks` folder.
 
-5. Follow [the instraction](https://github.com/GoogleCloudPlatform/cloudml-dist-mnist-example/blob/master/notebooks/Online%20prediction%20example.ipynb) in the notebook.
+5. Follow the [instruction](https://github.com/GoogleCloudPlatform/cloudml-dist-mnist-example/blob/master/notebooks/Online%20prediction%20example.ipynb) in the notebook.
 
 ## (Option) Training on VM instances
 
