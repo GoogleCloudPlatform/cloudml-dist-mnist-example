@@ -176,7 +176,7 @@ You can use the Datalab notebook to demonstrate the online prediction feature in
 1. Launch Datalab from the Cloud Shell.
 
   ```
-  $ datalab create mydatalab
+  $ datalab create mydatalab --zone us-central1-a
   ...
   Click on the *Web Preview* (up-arrow button at top-left), select *port 8081*, and start using Datalab.
   ```
