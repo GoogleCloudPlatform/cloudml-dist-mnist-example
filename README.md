@@ -111,10 +111,10 @@ Note: The dataset is stored in the [TFRecords][10] format.
   about every 3 minutes.
 
   At the end of the training, the final evaluation against the testset is
-  shown as below. In this example, it achieved 99.0% accuracy for the testset.
+  shown as below. In this example, it achieved 99.3% accuracy for the testset.
 
   ```
-  INFO   2017-01-05 16:20:22 +0900   master-replica-0    Step: 10007, Test loss: 313.048615, Test accuracy: 0.990000
+  Saving dict for global step 10008: accuracy = 0.9931, global_step = 10008, loss = 0.0315906
   ```
 
 3. (Option) Visualize the training process with TensorBoard
@@ -171,7 +171,17 @@ Note: The dataset is stored in the [TFRecords][10] format.
 
   ```
   $ gcloud ml-engine predict --model ${MODEL_NAME} --json-instances request.json
-
+  CLASSES  PROBABILITIES
+  7        [3.437006127094938e-21, 5.562060376991084e-16, 2.5538862785511466e-19, 7.567420805782991e-17, 2.891652426709158e-16, 2.2750016241705544e-20, 1.837758172149778e-24, 1.0, 6.893573298530907e-19, 8.065571390565747e-15]
+  2        [1.2471907477623206e-23, 2.291396136267388e-25, 1.0, 1.294716955176118e-32, 3.952643278911311e-25, 3.526924652059716e-36, 3.607279481567486e-25, 1.8093850397574458e-30, 7.008172489249426e-26, 2.6986217649454554e-29]
+  1        [5.45423318868473e-15, 1.0, 9.504595027687301e-12, 6.393277101537779e-16, 2.4266970655162368e-09, 1.674065400192326e-11, 5.571797797448985e-12, 1.3436474155525957e-10, 9.206201773137579e-11, 1.1845845552843799e-14]
+  0        [1.0, 5.909986790816939e-19, 2.4125963203678984e-14, 6.702774370873354e-18, 1.6427204513119395e-14, 1.2845496049501432e-15, 1.942619459391337e-12, 1.5014800112869015e-13, 4.630940880876074e-16, 7.722024408796102e-12]
+  4        [1.683408525966247e-15, 3.426583061416047e-15, 2.352944702683872e-14, 1.4354134652804144e-17, 1.0, 4.901479816097308e-14, 1.764131375703304e-13, 4.879935744842132e-16, 3.459843631210824e-13, 1.0766989513508185e-12]
+  1        [1.6325680202852679e-15, 1.0, 1.65708375840512e-13, 1.280228757537301e-17, 5.987414036789929e-11, 1.184729804494175e-13, 3.078233265616133e-14, 2.1106190406516845e-10, 2.1799059085614303e-11, 3.1170367766660944e-15]
+  4        [3.183327881731347e-25, 1.5531472253595656e-14, 8.822675326266091e-17, 1.1257204467406693e-23, 1.0, 3.675780366256499e-15, 2.509253215360222e-18, 1.948070958357668e-15, 7.695419301789741e-10, 1.5495283617957163e-14]
+  9        [7.252868244881265e-20, 1.0792899474931612e-19, 3.0990492379377613e-16, 1.9092543500607597e-16, 3.1547468630488407e-12, 3.947477936670459e-16, 7.344393142182707e-25, 1.0551019585358889e-17, 7.17420805922131e-13, 1.0]
+  5        [6.770833673326029e-15, 2.2513067020667885e-17, 4.9216548513263305e-19, 1.441009507560458e-17, 4.733751198914959e-15, 0.9999998807907104, 6.701989718749246e-08, 5.521230514480798e-19, 5.276084458216701e-09, 4.1348588442069456e-10]
+  9        [5.124952379488745e-22, 1.917571388490136e-20, 2.02434602684524e-21, 2.1246177460406675e-18, 1.8790316524963657e-11, 2.7904309518969085e-14, 7.973171243464317e-26, 6.233734909559877e-14, 9.224547341257772e-12, 1.0]
   ```
 
   `CLASSES` is the most probable digit of the given image, and `PROBABILITIES` shows the probabilites of each digit.
@@ -193,14 +203,10 @@ You can use the Datalab notebook to demonstrate the online prediction feature in
 3. Open a new notebook and execute the following command.
 
   ```
-  !git clone https://github.com/GoogleCloudPlatform/cloudml-dist-mnist-example
-  
-  Cloning into 'cloudml-dist-mnist-example'...
-  remote: Counting objects: 66, done.
-  remote: Compressing objects: 100% (15/15), done.
-  remote: Total 66 (delta 3), reused 0 (delta 0), pack-reused 51
-  Unpacking objects: 100% (66/66), done.
-  Checking connectivity... done.
+  %%bash
+  git clone https://github.com/GoogleCloudPlatform/cloudml-dist-mnist-example
+  cd cloudml-dist-mnist-example
+  git checkout v2.0
   ```
   
 4. Go back to the notebook list window and open `Online prediction example.ipynb` in `cloudml-dist-mnist-example/notebooks` folder.
