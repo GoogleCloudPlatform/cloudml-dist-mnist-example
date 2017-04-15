@@ -143,7 +143,7 @@ Note: The dataset is stored in the [TFRecords][10] format.
 
   ```
   $ MODEL_NAME=MNIST
-  $ ORIGIN=$(gsutil ls ${BUCKET}/${JOBNAME}/export/Servo | tail -1)
+  $ ORIGIN=$(gsutil ls ${BUCKET}/${JOB_ID}/export/Servo | tail -1)
   $ gcloud ml-engine models create ${MODEL_NAME} --regions us-central1
   $ VERSION_NAME=v1
   $ gcloud ml-engine versions create \
