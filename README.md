@@ -268,7 +268,11 @@ Optionally, you can train the model using VM instances running on
   Note: `us-east1-c` should be the zone of instances you have created.
 
   When the training is finished, the storage path containing the model binary
-  will be displayed.
+  will be displayed as below.
+  
+  ```
+  Trained model is stored in gs://cloudml-sample-ml/job_170415_081023/export/Servo/1492245350557/
+  ```
   
 ## Clean up
 
