@@ -74,8 +74,8 @@ In this section you will start your [Google Cloud Shell][6] and clone the
 
   ```
   $ ./scripts/create_records.py 
-  $ gsutil cp /tmp/data/train.tfrecords gs://$BUCKET/data/
-  $ gsutil cp /tmp/data/test.tfrecords gs://$BUCKET/data/
+  $ gsutil cp /tmp/data/train.tfrecords ${BUCKET}/data/
+  $ gsutil cp /tmp/data/test.tfrecords ${BUCKET}/data/
   ```
 
 Note: The dataset is stored in the [TFRecords][10] format.
@@ -251,8 +251,8 @@ Optionally, you can train the model using VM instances running on
   ```
   ```
   $ ./scripts/create_records.py 
-  $ gsutil cp /tmp/data/train.tfrecords $BUCKET/data/
-  $ gsutil cp /tmp/data/test.tfrecords $BUCKET/data/
+  $ gsutil cp /tmp/data/train.tfrecords ${BUCKET}/data/
+  $ gsutil cp /tmp/data/test.tfrecords ${BUCKET}/data/
   ```
 
 4. Start training
