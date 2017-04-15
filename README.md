@@ -237,15 +237,23 @@ Optionally, you can train the model using VM instances running on
   $ sudo pip install --upgrade tensorflow
   ```
 
-3. Upload MNIST dataset to the training bucket.
+3. Create a bucket used for training jobs and upload MNIST dataset.
 
+  Run the following commands on the CloudShell. 
+
+  ```
+  $ git clone https://github.com/GoogleCloudPlatform/cloudml-dist-mnist-example.git
+  $ cd cloudml-dist-mnist-example
+  $ git checkout v2.0
+  $ PROJECT_ID=$(gcloud config list project --format "value(core.project)")
+  $ BUCKET="gs://${PROJECT_ID}-ml"
+  $ gsutil mkdir $BUCKET
+  ```
   ```
   $ ./scripts/create_records.py 
   $ gsutil cp /tmp/data/train.tfrecords gs://$BUCKET/data/
   $ gsutil cp /tmp/data/test.tfrecords gs://$BUCKET/data/
   ```
-
-Note: This is the same as the step 2 of "Train the model on Cloud Machine Learning".
 
 4. Start training
 
@@ -254,9 +262,7 @@ Note: This is the same as the step 2 of "Train the model on Cloud Machine Learni
 
   ```
   $ gcloud config set compute/zone us-east1-c
-  $ git clone https://github.com/GoogleCloudPlatform/cloudml-dist-mnist-example.git
-  $ cd cloudml-dist-mnist-example
-  $ git checkout v2.0
+
   $ ./scripts/start-training.sh
   ```
 
