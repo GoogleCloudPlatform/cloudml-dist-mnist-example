@@ -90,13 +90,13 @@ Note: The dataset is stored in the [TFRecords][10] format.
       --package-path trainer \
       --module-name trainer.task \
       --staging-bucket ${BUCKET} \
-      --job-dir ${BUCKET}/${JOBNAME} \
+      --job-dir ${BUCKET}/${JOB_ID} \
       --runtime-version 1.0 \
       --region us-central1 \
       --config config/config.yaml \
       -- \
       --data_dir ${BUCKET}/data \
-      --output_dir ${BUCKET}/${JOBNAME} \
+      --output_dir ${BUCKET}/${JOB_ID} \
       --train_steps 10000
   ```
 
