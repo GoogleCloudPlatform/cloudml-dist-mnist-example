@@ -262,7 +262,6 @@ Optionally, you can train the model using VM instances running on
 
   ```
   $ gcloud config set compute/zone us-east1-c
-
   $ ./scripts/start-training.sh $BUCKET
   ```
 
