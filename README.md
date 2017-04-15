@@ -267,9 +267,9 @@ Optionally, you can train the model using VM instances running on
 
   Note: `us-east1-c` should be the zone of instances you have created.
 
-  When the training is finished, it displayes the storage path
-  containing the model binary.
-  
+  When the training is finished, the storage path containing the model binary
+  will be displayed.
+  
 ## Clean up
 
 Clean up is really easy, but also super important: if you don't follow these
