@@ -116,7 +116,7 @@ gcloud compute ssh master-0 -- $WORKDIR/start-dist-mnist.sh $DATADIR $OUTDIR
 echo "Done. Force stop remaining processes."
 ./stop-training.sh
 
-ORIGIN=$(gsutil ls gs://$BUCKET/$JOBNAME/export/Servo | tail -1)
+ORIGIN=$(gsutil ls $BUCKET/$JOBNAME/export/Servo | tail -1)
 echo ""
 echo "Trained model is stored in $ORIGIN"
 
