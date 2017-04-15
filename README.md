@@ -46,7 +46,7 @@ In this section you will start your [Google Cloud Shell][6] and clone the
 
   Note: After you start creating models, you can see them listed by using this command.
 
-4. Clone the lab repository in your cloud shell, then `cd` into that dir:
+4. Clone the lab repository in your cloud shell, then `cd` into that dir and checkout v2.0 branch.
 
   ```
   $ git clone https://github.com/GoogleCloudPlatform/cloudml-dist-mnist-example.git
@@ -54,6 +54,7 @@ In this section you will start your [Google Cloud Shell][6] and clone the
   ...
 
   $ cd cloudml-dist-mnist-example
+  $ git checkout v2.0
   ```
 
 [6]: https://cloud.google.com/cloud-shell/docs/
@@ -65,24 +66,38 @@ In this section you will start your [Google Cloud Shell][6] and clone the
 
   ```
   $ PROJECT_ID=$(gcloud config list project --format "value(core.project)")
-  $ TRAIN_BUCKET="gs://${PROJECT_ID}-ml"
-  $ gsutil mkdir $TRAIN_BUCKET
+  $ BUCKET="gs://${PROJECT_ID}-ml"
+  $ gsutil mkdir $BUCKET
   ```
 
-2. Submit a training job to Cloud Machine Learning.
+2. Upload MNIST dataset to the training bucket.
+
+  ```
+  $ ./scripts/create_records.py 
+  $ gsutil cp /tmp/data/train.tfrecords gs://$BUCKET/data/
+  $ gsutil cp /tmp/data/test.tfrecords gs://$BUCKET/data/
+  ```
+
+Note: The dataset is stored in the [TFRecords][10] format.
+
+[10]: https://www.tensorflow.org/api_guides/python/python_io#tfrecords_format_details
+
+3. Submit a training job to Cloud Machine Learning.
 
   ```
   $ JOB_ID="${USER}_$(date +%Y%m%d_%H%M%S)"
   $ gcloud ml-engine jobs submit training ${JOB_ID} \
       --package-path trainer \
       --module-name trainer.task \
-      --staging-bucket "${TRAIN_BUCKET}" \
+      --staging-bucket gs://${BUCKET} \
+      --job-dir gs://${BUCKET}/${JOBNAME} \
+      --runtime-version 1.0 \
       --region us-central1 \
       --config config/config.yaml \
       -- \
-      --log_dir ${TRAIN_BUCKET}/${JOB_ID}/train \
-      --model_dir ${TRAIN_BUCKET}/${JOB_ID}/model \
-      --max_steps 10000
+      --data_dir gs://${BUCKET}/data \
+      --output_dir gs://${BUCKET}/${JOBNAME} \
+      --train_steps 10000
   ```
 
   Note: `JOB_ID` can be arbitrary, but you can't reuse the same one.
@@ -90,9 +105,10 @@ In this section you will start your [Google Cloud Shell][6] and clone the
   Note: Edit `config/config.yaml` to change the amount of resources
   to be allocated for the job.
 
-  During the training, each worker node shows a training loss value (the total
+  During the training, worker nodes show a training loss value (the total
   loss value for dataset in a single training batch) in some intervals.
-  In addition, the master node shows a loss and accuracy for the testset.
+  In addition, the master node shows a loss and accuracy for the testset
+  about every 3 minutes.
 
   At the end of the training, the final evaluation against the testset is
   shown as below. In this example, it achieved 99.0% accuracy for the testset.
@@ -104,11 +120,11 @@ In this section you will start your [Google Cloud Shell][6] and clone the
 3. (Option) Visualize the training process with TensorBoard
 
   After the training, the summary data is stored in
-  `${TRAIN_BUCKET}/${JOB_ID}/train` and you can visualize them with TensorBoard.
+  `gs://${BUCKET}/${JOBNAME}` and you can visualize them with TensorBoard.
   First, run the following command on the CloudShell to start TensorBoard.
 
   ```
-  $ tensorboard --port 8080 --logdir ${TRAIN_BUCKET}/${JOB_ID}/train
+  $ tensorboard --port 8080 --logdir gs://${BUCKET}/${JOBNAME}
   ```
 
   Select 'Preview on port 8080' from Web preview menu in the top-left corner
@@ -127,10 +143,11 @@ In this section you will start your [Google Cloud Shell][6] and clone the
 
   ```
   $ MODEL_NAME=MNIST
+  $ ORIGIN=$(gsutil ls gs://${BUCKET}/${JOBNAME}/export/Servo | tail -1)
   $ gcloud ml-engine models create ${MODEL_NAME} --regions us-central1
   $ VERSION_NAME=v1
   $ gcloud ml-engine versions create \
-      --origin $TRAIN_BUCKET/${JOB_ID}/model \
+      --origin ${ORIGIN} \
       --model ${MODEL_NAME} \
       ${VERSION_NAME}
   $ gcloud ml-engine versions set-default --model ${MODEL_NAME} ${VERSION_NAME}
@@ -154,20 +171,10 @@ In this section you will start your [Google Cloud Shell][6] and clone the
 
   ```
   $ gcloud ml-engine predict --model ${MODEL_NAME} --json-instances request.json
-KEY  SCORES
-0    [5.491162212434286e-12, 1.4754857058374427e-10, 5.0145921193234244e-08, 9.679915820015594e-07, 1.1807515902517718e-11, 2.1074924791419924e-11, 7.73946938943083e-19, 0.9999980926513672, 6.3151288642870895e-09, 9.910554581438191e-07]
-1    [2.9550360380881102e-08, 2.0272503320484248e-07, 0.9999997615814209, 5.557484472618057e-10, 7.705624062003674e-14, 1.2500921352492488e-14, 2.9164962112027126e-11, 3.5212078648109036e-15, 9.194990879812792e-10, 9.704423389468017e-17]
-2    [6.980260369715552e-09, 0.9999717473983765, 1.7510066641079902e-07, 1.3880581128944414e-08, 1.2206406609038822e-05, 1.52971484368436e-08, 7.902426091277448e-07, 9.003126251627691e-06, 5.9756007431133185e-06, 1.860657405927668e-08]
-3    [0.999998927116394, 1.8409378839054358e-13, 3.04105398640786e-08, 4.30901364936731e-12, 3.6688863058742527e-10, 2.4977113710633603e-09, 9.903883437800687e-07, 1.4073207876830196e-10, 9.441464277060163e-10, 2.3699602280657928e-09]
-4    [8.716865007585284e-10, 5.250225809660947e-10, 5.023502724910145e-10, 2.899413998821987e-12, 0.9999929666519165, 5.790986440379342e-11, 1.9194641431852233e-09, 1.5732334546214588e-08, 8.654805205843275e-10, 7.070047558954684e-06]
-5    [8.770115189626893e-10, 0.9999911785125732, 5.714275275181535e-09, 2.464804471635773e-10, 1.5737153944428428e-06, 4.692493615898741e-11, 7.134818069687299e-09, 7.002449365245411e-06, 2.3442017038632912e-07, 5.295051952458607e-09]
-6    [5.615819969966539e-15, 4.6051244595446406e-08, 1.492788878620921e-11, 1.1583707951179356e-11, 0.9999597072601318, 1.657236126106909e-08, 3.130453882227435e-11, 1.6037419925396534e-07, 3.9096550608519465e-05, 9.630925887904596e-07]
-7    [3.4089366746092864e-11, 1.3498856255012015e-08, 1.4886258448143508e-08, 4.7652913053752854e-05, 0.0007680997950956225, 2.1690282210329315e-06, 1.2528266184891335e-12, 2.3564155071653659e-07, 1.509065623395145e-05, 0.99916672706604]
-8    [1.2211978983600602e-08, 6.400643641200931e-16, 3.752947819180008e-08, 6.670989871615518e-10, 1.6800930646709844e-09, 0.9996830224990845, 0.00021479142014868557, 6.799472790364192e-11, 9.631117427488789e-05, 5.793618583993521e-06]
-9    [9.991658889152433e-11, 1.0411928480849597e-12, 8.161708114906574e-11, 8.24744432748048e-08, 2.505870179447811e-05, 7.725438067041068e-10, 8.123087299376566e-14, 1.051930939865997e-05, 7.270523201441392e-05, 0.9998916387557983]
+
   ```
 
-  The prediction results (scores for labels) are shown with the associated key values.
+  `CLASSES` is the most probable digit of the given image, and `PROBABILITIES` shows the probabilites of each digit.
 
 ## Using online prediction from Datalab
 
@@ -204,11 +211,12 @@ You can use the Datalab notebook to demonstrate the online prediction feature in
 
 Optionally, you can train the model using VM instances running on
  Google Compute Engine(GCE).
-1. Launch four VM instances with the following options
+1. Launch four VM instances with the following options.
 
   - Hostname: ps-1, master-0, worker-0, worker-1
   - OS image: ubuntu-1604-lts
   - Machine type: n1-standard-1
+  - Identity and API access: Set access for each API, Storage = 'Read Write'
 
   Note: Since instance roles are inferred from their hostnames,
   you must set hostnames exactly as specified.
@@ -223,26 +231,9 @@ Optionally, you can train the model using VM instances running on
   $ sudo pip install --upgrade tensorflow
   ```
 
-3. Download training data
+3. Upload MNIST dataset to the training bucket.
 
-  Instead of fetching dynamically from the web, you place the training
-  data in the local directory in advance.
-
-  Run the following commands on master-0, worker-0 and worker-1.
-
-  ```
-  $ mkdir $HOME/data-pd/data-dir
-  $ cd $HOME/data-pd/data-dir
-  $ wget http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz
-  $ wget http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz
-  $ wget http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz
-  $ wget http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz
-  ```
-
-  Alternatively, you may attach a shared read-only persistent disk which
-  has the `data-dir` directory containing the same training data. The
-  attached disk is mounted on `$HOME/data-pd` by the training script in
-  the next step.
+  This is the same as the step.2 of "Train the model on Cloud Machine Learning".
 
 4. Start training
 
@@ -258,6 +249,9 @@ Optionally, you can train the model using VM instances running on
 
   Note: `us-east1-c` should be the zone of instances you have created.
 
+  When the training is finished, it displayes the storage path
+  containing the model binary.
+  
 ## Clean up
 
 Clean up is really easy, but also super important: if you don't follow these
