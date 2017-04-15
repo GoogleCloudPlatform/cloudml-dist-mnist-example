@@ -29,7 +29,7 @@ def generate_experiment_fn(data_dir,
                            train_batch_size=100,
                            eval_batch_size=100,
                            train_steps=10000,
-                           eval_steps=10,
+                           eval_steps=100,
                            **experiment_args):
 
   def _experiment_fn(output_dir):
