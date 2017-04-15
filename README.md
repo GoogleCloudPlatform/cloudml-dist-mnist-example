@@ -89,14 +89,14 @@ Note: The dataset is stored in the [TFRecords][10] format.
   $ gcloud ml-engine jobs submit training ${JOB_ID} \
       --package-path trainer \
       --module-name trainer.task \
-      --staging-bucket gs://${BUCKET} \
-      --job-dir gs://${BUCKET}/${JOBNAME} \
+      --staging-bucket ${BUCKET} \
+      --job-dir ${BUCKET}/${JOBNAME} \
       --runtime-version 1.0 \
       --region us-central1 \
       --config config/config.yaml \
       -- \
-      --data_dir gs://${BUCKET}/data \
-      --output_dir gs://${BUCKET}/${JOBNAME} \
+      --data_dir ${BUCKET}/data \
+      --output_dir ${BUCKET}/${JOBNAME} \
       --train_steps 10000
   ```
 
@@ -124,7 +124,7 @@ Note: The dataset is stored in the [TFRecords][10] format.
   First, run the following command on the CloudShell to start TensorBoard.
 
   ```
-  $ tensorboard --port 8080 --logdir gs://${BUCKET}/${JOBNAME}
+  $ tensorboard --port 8080 --logdir ${BUCKET}/${JOBNAME}
   ```
 
   Select 'Preview on port 8080' from Web preview menu in the top-left corner
@@ -143,7 +143,7 @@ Note: The dataset is stored in the [TFRecords][10] format.
 
   ```
   $ MODEL_NAME=MNIST
-  $ ORIGIN=$(gsutil ls gs://${BUCKET}/${JOBNAME}/export/Servo | tail -1)
+  $ ORIGIN=$(gsutil ls ${BUCKET}/${JOBNAME}/export/Servo | tail -1)
   $ gcloud ml-engine models create ${MODEL_NAME} --regions us-central1
   $ VERSION_NAME=v1
   $ gcloud ml-engine versions create \
@@ -251,8 +251,8 @@ Optionally, you can train the model using VM instances running on
   ```
   ```
   $ ./scripts/create_records.py 
-  $ gsutil cp /tmp/data/train.tfrecords gs://$BUCKET/data/
-  $ gsutil cp /tmp/data/test.tfrecords gs://$BUCKET/data/
+  $ gsutil cp /tmp/data/train.tfrecords $BUCKET/data/
+  $ gsutil cp /tmp/data/test.tfrecords $BUCKET/data/
   ```
 
 4. Start training
