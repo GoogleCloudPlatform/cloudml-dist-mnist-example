@@ -74,8 +74,8 @@ In this section you will start your [Google Cloud Shell][6] and clone the
 
   ```
   $ ./scripts/create_records.py 
-  $ gsutil cp /tmp/data/train.tfrecords gs://$BUCKET/data/
-  $ gsutil cp /tmp/data/test.tfrecords gs://$BUCKET/data/
+  $ gsutil cp /tmp/data/train.tfrecords ${BUCKET}/data/
+  $ gsutil cp /tmp/data/test.tfrecords ${BUCKET}/data/
   ```
 
 Note: The dataset is stored in the [TFRecords][10] format.
@@ -89,14 +89,14 @@ Note: The dataset is stored in the [TFRecords][10] format.
   $ gcloud ml-engine jobs submit training ${JOB_ID} \
       --package-path trainer \
       --module-name trainer.task \
-      --staging-bucket gs://${BUCKET} \
-      --job-dir gs://${BUCKET}/${JOBNAME} \
+      --staging-bucket ${BUCKET} \
+      --job-dir ${BUCKET}/${JOB_ID} \
       --runtime-version 1.0 \
       --region us-central1 \
       --config config/config.yaml \
       -- \
-      --data_dir gs://${BUCKET}/data \
-      --output_dir gs://${BUCKET}/${JOBNAME} \
+      --data_dir ${BUCKET}/data \
+      --output_dir ${BUCKET}/${JOB_ID} \
       --train_steps 10000
   ```
 
@@ -120,11 +120,11 @@ Note: The dataset is stored in the [TFRecords][10] format.
 3. (Option) Visualize the training process with TensorBoard
 
   After the training, the summary data is stored in
-  `gs://${BUCKET}/${JOBNAME}` and you can visualize them with TensorBoard.
+  `${BUCKET}/${JOB_ID}` and you can visualize them with TensorBoard.
   First, run the following command on the CloudShell to start TensorBoard.
 
   ```
-  $ tensorboard --port 8080 --logdir gs://${BUCKET}/${JOBNAME}
+  $ tensorboard --port 8080 --logdir ${BUCKET}/${JOB_ID}
   ```
 
   Select 'Preview on port 8080' from Web preview menu in the top-left corner
@@ -143,7 +143,7 @@ Note: The dataset is stored in the [TFRecords][10] format.
 
   ```
   $ MODEL_NAME=MNIST
-  $ ORIGIN=$(gsutil ls gs://${BUCKET}/${JOBNAME}/export/Servo | tail -1)
+  $ ORIGIN=$(gsutil ls ${BUCKET}/${JOB_ID}/export/Servo | tail -1)
   $ gcloud ml-engine models create ${MODEL_NAME} --regions us-central1
   $ VERSION_NAME=v1
   $ gcloud ml-engine versions create \
@@ -237,9 +237,23 @@ Optionally, you can train the model using VM instances running on
   $ sudo pip install --upgrade tensorflow
   ```
 
-3. Upload MNIST dataset to the training bucket.
+3. Create a bucket used for training jobs and upload MNIST dataset.
 
-  This is the same as the step.2 of "Train the model on Cloud Machine Learning".
+  Run the following commands on the CloudShell. 
+
+  ```
+  $ git clone https://github.com/GoogleCloudPlatform/cloudml-dist-mnist-example.git
+  $ cd cloudml-dist-mnist-example
+  $ git checkout v2.0
+  $ PROJECT_ID=$(gcloud config list project --format "value(core.project)")
+  $ BUCKET="gs://${PROJECT_ID}-ml"
+  $ gsutil mkdir $BUCKET
+  ```
+  ```
+  $ ./scripts/create_records.py 
+  $ gsutil cp /tmp/data/train.tfrecords ${BUCKET}/data/
+  $ gsutil cp /tmp/data/test.tfrecords ${BUCKET}/data/
+  ```
 
 4. Start training
 
@@ -248,16 +262,14 @@ Optionally, you can train the model using VM instances running on
 
   ```
   $ gcloud config set compute/zone us-east1-c
-  $ git clone https://github.com/GoogleCloudPlatform/cloudml-dist-mnist-example.git
-  $ cd cloudml-dist-mnist-example
-  $ ./scripts/start-training.sh
+  $ ./scripts/start-training.sh $BUCKET
   ```
 
   Note: `us-east1-c` should be the zone of instances you have created.
 
-  When the training is finished, it displayes the storage path
-  containing the model binary.
-  
+  When the training is finished, the storage path containing the model binary
+  will be displayed.
+  
 ## Clean up
 
 Clean up is really easy, but also super important: if you don't follow these

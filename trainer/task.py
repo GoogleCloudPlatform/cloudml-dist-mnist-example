@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Example implementation of code to run on the Cloud ML service.
-"""
 
 import argparse
 import json
@@ -58,7 +56,6 @@ def generate_experiment_fn(data_dir,
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
-  # Input Arguments
   parser.add_argument(
       '--data_dir',
       help='GCS or local path to training data',
@@ -88,7 +85,6 @@ if __name__ == '__main__':
       default=100,
       type=int
   )
-  # Training arguments
   parser.add_argument(
       '--output_dir',
       help='GCS location to write checkpoints and export models',
@@ -99,8 +95,6 @@ if __name__ == '__main__':
       help='this model ignores this field, but it is required by gcloud',
       default='junk'
   )
-
-  # Experiment arguments
   parser.add_argument(
       '--eval_delay_secs',
       help='How long to wait before running first evaluation',
