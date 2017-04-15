@@ -120,11 +120,11 @@ Note: The dataset is stored in the [TFRecords][10] format.
 3. (Option) Visualize the training process with TensorBoard
 
   After the training, the summary data is stored in
-  `gs://${BUCKET}/${JOBNAME}` and you can visualize them with TensorBoard.
+  `gs://${BUCKET}/${JOB_ID}` and you can visualize them with TensorBoard.
   First, run the following command on the CloudShell to start TensorBoard.
 
   ```
-  $ tensorboard --port 8080 --logdir ${BUCKET}/${JOBNAME}
+  $ tensorboard --port 8080 --logdir ${BUCKET}/${JOB_ID}
   ```
 
   Select 'Preview on port 8080' from Web preview menu in the top-left corner
