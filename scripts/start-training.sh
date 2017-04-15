@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 # Copyright 2017 Google Inc.
 #
@@ -17,10 +17,16 @@
 MAXWORKERS=5
 WORKDIR=/tmp/workdir
 
-BUCKET=${1:-dist-mnist}
+if [[ $# -lt 1 ]]; then
+  PROJECT_ID=$(gcloud config list project --format "value(core.project)")
+  BUCKET="gs://${PROJECT_ID}-ml"
+else
+  BUCKET=$1
+fi
+
 JOBNAME=job_$(date -u +%y%m%d_%H%M%S)
-DATADIR=gs://${BUCKET}/data
-OUTDIR=gs://${BUCKET}/${JOBNAME}
+DATADIR=${BUCKET}/data
+OUTDIR=${BUCKET}/${JOBNAME}
 
 pushd $(dirname $0) >/dev/null
 
