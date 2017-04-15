@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 # Copyright 2017 Google Inc.
 #
@@ -16,6 +16,12 @@
 
 MAXWORKERS=5
 WORKDIR=/tmp/workdir
+
+BUCKET=${1:-dist-mnist}
+JOBNAME=job_$(date -u +%y%m%d_%H%M%S)
+DATADIR=gs://${BUCKET}/data
+OUTDIR=gs://${BUCKET}/${JOBNAME}
+
 pushd $(dirname $0) >/dev/null
 
 # Force stop existing jobs
@@ -54,6 +60,7 @@ done
 
 cat <<EOF > /tmp/tf_config.json
 {
+  "environment": "cloud",
   "cluster": {
     ${ps_entry}
     ${worker_entry}
@@ -76,7 +83,7 @@ for  i in $(seq 0 $NUM_PS); do
   gcloud beta compute scp --recurse \
     /tmp/tf_config.json start-dist-mnist.sh ../trainer/ \
     ps-${i}:$WORKDIR
-  gcloud compute ssh ps-${i} -- $WORKDIR/start-dist-mnist.sh &
+  gcloud compute ssh ps-${i} -- $WORKDIR/start-dist-mnist.sh $DATADIR $OUTDIR &
 done
 
 # Start workers in the background
@@ -87,7 +94,7 @@ for  i in $(seq 0 $NUM_WORKER); do
   gcloud beta compute scp --recurse \
     /tmp/tf_config.json start-dist-mnist.sh ../trainer/ \
     worker-${i}:$WORKDIR
-  gcloud compute ssh worker-${i} -- $WORKDIR/start-dist-mnist.sh &
+  gcloud compute ssh worker-${i} -- $WORKDIR/start-dist-mnist.sh $DATADIR $OUTDIR &
 done
 
 # Start a master
@@ -97,13 +104,14 @@ gcloud compute ssh master-0 -- mkdir -p $WORKDIR
 gcloud beta compute scp --recurse \
   /tmp/tf_config.json start-dist-mnist.sh ../trainer/ \
   master-0:$WORKDIR
-  gcloud compute ssh master-0 -- $WORKDIR/start-dist-mnist.sh
+gcloud compute ssh master-0 -- $WORKDIR/start-dist-mnist.sh $DATADIR $OUTDIR
 
 # Cleanup
 echo "Done. Force stop remaining processes."
 ./stop-training.sh
-echo "Copy the trained model from a mster."
-gcloud beta compute scp --recurse master-0:/tmp/model/ /tmp
-echo "See /tmp/model for the trained model files."
+
+ORIGIN=$(gsutil ls gs://$BUCKET/$JOBNAME/export/Servo | tail -1)
+echo ""
+echo "Trained model is stored in $ORIGIN"
 
 popd >/dev/null
