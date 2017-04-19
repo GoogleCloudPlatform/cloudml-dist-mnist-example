@@ -183,7 +183,7 @@ Note: The dataset is stored in the [TFRecords][10] format.
   9        [5.124952379488745e-22, 1.917571388490136e-20, 2.02434602684524e-21, 2.1246177460406675e-18, 1.8790316524963657e-11, 2.7904309518969085e-14, 7.973171243464317e-26, 6.233734909559877e-14, 9.224547341257772e-12, 1.0]
   ```
 
-  `CLASSES` is the most probable digit of the given image, and `PROBABILITIES` shows the probabilites of each digit.
+  `CLASSES` is the most probable digit of the given image, and `PROBABILITIES` shows the probabilities of each digit.
 
 ## Using online prediction from Datalab
 
