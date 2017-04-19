@@ -36,11 +36,11 @@ def generate_experiment_fn(data_dir,
     return Experiment(
       model.build_estimator(output_dir),
       train_input_fn=model.get_input_fn(
-                         filename=os.path.join(data_dir, 'train.tfrecords'),
-                         batch_size=train_batch_size),
+          filename=os.path.join(data_dir, 'train.tfrecords'),
+          batch_size=train_batch_size),
       eval_input_fn=model.get_input_fn(
-                         filename=os.path.join(data_dir, 'test.tfrecords'),
-                         batch_size=eval_batch_size),
+          filename=os.path.join(data_dir, 'test.tfrecords'),
+          batch_size=eval_batch_size),
       export_strategies=[saved_model_export_utils.make_export_strategy(
           model.serving_input_fn,
           default_output_alternative_key=None,

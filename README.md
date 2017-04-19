@@ -46,7 +46,7 @@ In this section you will start your [Google Cloud Shell][6] and clone the
 
   Note: After you start creating models, you can see them listed by using this command.
 
-4. Clone the lab repository in your cloud shell, then `cd` into that dir and checkout v2.0 branch.
+4. Clone the lab repository in your cloud shell, then `cd` into that dir.
 
   ```
   $ git clone https://github.com/GoogleCloudPlatform/cloudml-dist-mnist-example.git
@@ -54,7 +54,6 @@ In this section you will start your [Google Cloud Shell][6] and clone the
   ...
 
   $ cd cloudml-dist-mnist-example
-  $ git checkout v2.0
   ```
 
 [6]: https://cloud.google.com/cloud-shell/docs/
@@ -205,8 +204,6 @@ You can use the Datalab notebook to demonstrate the online prediction feature in
   ```
   %%bash
   git clone https://github.com/GoogleCloudPlatform/cloudml-dist-mnist-example
-  cd cloudml-dist-mnist-example
-  git checkout v2.0
   ```
   
 4. Go back to the notebook list window and open `Online prediction example.ipynb` in `cloudml-dist-mnist-example/notebooks` folder.
@@ -244,7 +241,6 @@ Optionally, you can train the model using VM instances running on
   ```
   $ git clone https://github.com/GoogleCloudPlatform/cloudml-dist-mnist-example.git
   $ cd cloudml-dist-mnist-example
-  $ git checkout v2.0
   $ PROJECT_ID=$(gcloud config list project --format "value(core.project)")
   $ BUCKET="gs://${PROJECT_ID}-ml"
   $ gsutil mkdir $BUCKET
