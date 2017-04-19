@@ -15,25 +15,12 @@
 # limitations under the License.
 
 cd $(dirname $0)
+DATADIR=$1
+OUTDIR=$2
 
 ROLE=$(hostname | awk -F'-' '{ print $1 }')
 INDEX=$(hostname | awk -F'-' '{ print $2 }')
 
 export TF_CONFIG=$(sed "s/__INDEX__/$INDEX/;s/__ROLE__/$ROLE/" tf_config.json)
 
-LOG_DIR="/tmp/logs"
-MODEL_DIR="/tmp/model"
-WORK_FLAGS="--batch_size=100 --max_steps=10000 --local_data"
-DATA_DIR="$HOME/data-pd/data-dir"
-
-DATA_DISK="/dev/disk/by-id/google-persistent-disk-1"
-DATA_MOUNT="$HOME/data-pd"
-if [[ -b $DATA_DISK ]] && df $DATA_DISK | grep -qvE "(^Filesystem|$DATA_MOUNT)"; then
-  mkdir -p $DATA_MOUNT
-  sudo mount -o ro,noload $DATA_DISK $DATA_MOUNT
-fi
-
-rm -rf $LOG_DIR $MODEL_DIR
-mkdir -p $LOG_DIR
-python trainer/task.py $WORK_FLAGS \
-       --data_dir=$DATA_DIR --log_dir=$LOG_DIR --model_dir=$MODEL_DIR
+python trainer/task.py --output_dir=$OUTDIR --data_dir=$DATADIR --train_steps=10000

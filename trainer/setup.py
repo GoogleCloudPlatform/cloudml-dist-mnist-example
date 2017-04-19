@@ -1,6 +1,4 @@
-#!/usr/bin/python
-
-# Copyright 2017 Google Inc.
+# Copyright 2016 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,11 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import json
-from tensorflow.examples.tutorials.mnist import input_data
+from setuptools import find_packages
+from setuptools import setup
 
-mnist = input_data.read_data_sets("/tmp/data/", one_hot=True)
-with open("request.json", "w") as file:
-    for i in range(10):
-        data = {"inputs": mnist.test.images[i].tolist()}
-        file.write(json.dumps(data) + '\n')
+REQUIRED_PACKAGES = [
+]
+
+setup(
+    name='dist_mnist',
+    version='0.1',
+    install_requires=REQUIRED_PACKAGES,
+    packages=find_packages(),
+    include_package_data=True,
+    requires=[]
+)
