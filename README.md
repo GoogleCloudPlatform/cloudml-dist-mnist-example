@@ -1,4 +1,4 @@
-# Cloud ML and GCE compatible TensorFlow distributed training example
+# Cloud MLE and GCE compatible TensorFlow distributed training example
 
 Disclaimer: This is not an official Google product.
 
@@ -10,7 +10,7 @@ This is an example to demonstrate how to write distributed TensorFlow code
 
 ## Products
 - [TensorFlow][2]
-- [Cloud Machine Learning][3]
+- [Cloud Machine Learning Engine][3]
 - [Cloud Datalab][9]
 
 [1]: https://github.com/GoogleCloudPlatform/cloudml-samples/tree/master/mnist/distributed/trainer
