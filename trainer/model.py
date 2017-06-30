@@ -55,7 +55,7 @@ def input_fn(filename, batch_size=100, num_epochs=None):
       [image, label], batch_size=batch_size,
       capacity=1000 + 3 * batch_size)
 
-  return {'image': images}, labels
+  return {'inputs': images}, labels
 
 
 def get_input_fn(filename, num_epochs=None, batch_size=100):
@@ -64,7 +64,7 @@ def get_input_fn(filename, num_epochs=None, batch_size=100):
 
 def _cnn_model_fn(features, labels, mode):
   # Input Layer
-  input_layer = tf.reshape(features['image'], [-1, 28, 28, 1])
+  input_layer = tf.reshape(features['inputs'], [-1, 28, 28, 1])
 
   # Convolutional Layer #1
   conv1 = tf.layers.conv2d(
@@ -136,7 +136,7 @@ def get_eval_metrics():
 
 
 def serving_input_fn():
-  feature_placeholders = {'image': tf.placeholder(tf.float32, [None, 784])}
+  feature_placeholders = {'inputs': tf.placeholder(tf.float32, [None, 784])}
   features = {
     key: tensor
     for key, tensor in feature_placeholders.items()
