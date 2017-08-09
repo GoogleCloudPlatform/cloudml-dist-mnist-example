@@ -88,7 +88,7 @@ Note: The dataset is stored in the [TFRecords][10] format.
       --module-name trainer.task \
       --staging-bucket ${BUCKET} \
       --job-dir ${BUCKET}/${JOB_ID} \
-      --runtime-version 1.0 \
+      --runtime-version 1.2 \
       --region us-central1 \
       --config config/config.yaml \
       -- \
