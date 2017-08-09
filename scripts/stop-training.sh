@@ -15,11 +15,11 @@
 # limitations under the License.
 
 # Get the number of nodes
-NUM_PS=$(gcloud compute instances list -r '^ps-\d+ ' | wc -l)
-NUM_WORKER=$(gcloud compute instances list -r '^worker-\d+ ' | wc -l)
+NUM_PS=$(gcloud compute instances list | grep -E '^ps-[0-9]+ ' | wc -l)
+NUM_WORKER=$(gcloud compute instances list | grep -E '^worker-[0-9]+ ' | wc -l)
 
-NUM_PS=$(( NUM_PS - 2 ))
-NUM_WORKER=$(( NUM_WORKER - 2 ))
+NUM_PS=$(( NUM_PS - 1 ))
+NUM_WORKER=$(( NUM_WORKER - 1 ))
 
 # Stop parameter servers
 for  i in $(seq 0 $NUM_PS); do

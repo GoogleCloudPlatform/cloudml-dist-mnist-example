@@ -18,10 +18,7 @@ from __future__ import division
 from __future__ import print_function
 
 import tensorflow as tf
-from tensorflow.contrib import learn
-from tensorflow.contrib import layers
-from tensorflow.contrib import metrics
-from tensorflow.contrib.learn.python.learn.estimators import model_fn as model_fn_lib
+from tensorflow.python.estimator.model_fn import ModeKeys as Modes
 
 
 tf.logging.set_verbosity(tf.logging.INFO)
@@ -46,9 +43,8 @@ def read_and_decode(filename_queue):
   return image, label
 
 
-def input_fn(filename, batch_size=100, num_epochs=None):
-  filename_queue = tf.train.string_input_producer(
-      [filename], num_epochs=num_epochs)
+def input_fn(filename, batch_size=100):
+  filename_queue = tf.train.string_input_producer([filename])
 
   image, label = read_and_decode(filename_queue)
   images, labels = tf.train.batch(
@@ -58,7 +54,7 @@ def input_fn(filename, batch_size=100, num_epochs=None):
   return {'inputs': images}, labels
 
 
-def get_input_fn(filename, num_epochs=None, batch_size=100):
+def get_input_fn(filename, batch_size=100):
   return lambda: input_fn(filename, batch_size)
 
 
@@ -71,7 +67,7 @@ def _cnn_model_fn(features, labels, mode):
       inputs=input_layer,
       filters=32,
       kernel_size=[5, 5],
-      padding="same",
+      padding='same',
       activation=tf.nn.relu)
 
   # Pooling Layer #1
@@ -82,7 +78,7 @@ def _cnn_model_fn(features, labels, mode):
       inputs=pool1,
       filters=64,
       kernel_size=[5, 5],
-      padding="same",
+      padding='same',
       activation=tf.nn.relu)
   pool2 = tf.layers.max_pooling2d(inputs=conv2, pool_size=[2, 2], strides=2)
 
@@ -90,59 +86,54 @@ def _cnn_model_fn(features, labels, mode):
   pool2_flat = tf.reshape(pool2, [-1, 7 * 7 * 64])
   dense = tf.layers.dense(inputs=pool2_flat, units=1024, activation=tf.nn.relu)
   dropout = tf.layers.dropout(
-      inputs=dense, rate=0.4, training=(mode == learn.ModeKeys.TRAIN))
+      inputs=dense, rate=0.4, training=(mode == Modes.TRAIN))
 
   # Logits Layer
   logits = tf.layers.dense(inputs=dropout, units=10)
 
-  loss = None
-  train_op = None
+  # Define operations
+  if mode in (Modes.PREDICT, Modes.EVAL):
+    predicted_indices = tf.argmax(input=logits, axis=1)
+    probabilities = tf.nn.softmax(logits, name='softmax_tensor')
 
-  # Calculate Loss (for both TRAIN and EVAL modes)
-  if mode != learn.ModeKeys.INFER:
-    onehot_labels = tf.one_hot(indices=tf.cast(labels, tf.int32), depth=10)
+  if mode in (Modes.TRAIN, Modes.EVAL):
+    global_step = tf.contrib.framework.get_or_create_global_step()
+    label_indices = tf.cast(labels, tf.int32)
     loss = tf.losses.softmax_cross_entropy(
-        onehot_labels=onehot_labels, logits=logits)
+        onehot_labels=tf.one_hot(label_indices, depth=10), logits=logits)
+    tf.summary.scalar('OptimizeLoss', loss)
 
-  # Configure the Training Op (for TRAIN mode)
-  if mode == learn.ModeKeys.TRAIN:
-    train_op = tf.contrib.layers.optimize_loss(
-        loss=loss,
-        global_step=tf.contrib.framework.get_global_step(),
-        learning_rate=0.001, optimizer="Adam")
+  if mode == Modes.PREDICT:
+    predictions = {
+        'classes': predicted_indices,
+        'probabilities': probabilities
+    }
+    export_outputs = {
+        'prediction': tf.estimator.export.PredictOutput(predictions)
+    }
+    return tf.estimator.EstimatorSpec(
+        mode, predictions=predictions, export_outputs=export_outputs)
 
-  # Generate Predictions
-  predictions = {
-      "classes": tf.argmax(input=logits, axis=1),
-      "probabilities": tf.nn.softmax(logits, name="softmax_tensor")
-  }
+  if mode == Modes.TRAIN:
+    optimizer = tf.train.AdamOptimizer(learning_rate=0.001)
+    train_op = optimizer.minimize(loss, global_step=global_step)
+    return tf.estimator.EstimatorSpec(mode, loss=loss, train_op=train_op)
 
-  # Return a ModelFnOps object
-  return model_fn_lib.ModelFnOps(mode=mode, loss=loss, train_op=train_op,
-                                 predictions=predictions)
+  if mode == Modes.EVAL:
+    eval_metric_ops = {
+        'accuracy': tf.metrics.accuracy(label_indices, predicted_indices)
+    }
+    return tf.estimator.EstimatorSpec(
+        mode, loss=loss, eval_metric_ops=eval_metric_ops)
 
 
 def build_estimator(model_dir):
-  return learn.Estimator(
-           model_fn=_cnn_model_fn,
-           model_dir=model_dir,
-           config=tf.contrib.learn.RunConfig(save_checkpoints_secs=180))
-
-
-def get_eval_metrics():
-  return {"accuracy": learn.MetricSpec(metric_fn=tf.metrics.accuracy,
-                                       prediction_key="classes")
-  }
+  return tf.estimator.Estimator(
+      model_fn=_cnn_model_fn,
+      model_dir=model_dir,
+      config=tf.contrib.learn.RunConfig(save_checkpoints_secs=180))
 
 
 def serving_input_fn():
-  feature_placeholders = {'inputs': tf.placeholder(tf.float32, [None, 784])}
-  features = {
-    key: tensor
-    for key, tensor in feature_placeholders.items()
-  }    
-  return learn.utils.input_fn_utils.InputFnOps(
-    features,
-    None,
-    feature_placeholders
-  )
+  inputs = {'inputs': tf.placeholder(tf.float32, [None, 784])}
+  return tf.estimator.export.ServingInputReceiver(inputs, inputs)
