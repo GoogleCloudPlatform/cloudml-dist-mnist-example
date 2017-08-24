@@ -14,11 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-ver=$(pip list | grep 'tensorflow (' | grep -oE '[0-9]+\.[0-9]+')
+ver=$(sudo pip list | grep -E '^tensorflow \(' | grep -oE '[0-9]+\.[0-9]+')
 if [[ $ver == '1.3' ]]; then
   echo "TF1.3 currently has a compatibility issue with the prediction API."
   echo "Downgrading to TF1.2.1 as a tentative workaround..."
-  pip install tensorflow==1.2.1
+  sudo pip install tensorflow==1.2.1
 fi
 
 cd $(dirname $0)
