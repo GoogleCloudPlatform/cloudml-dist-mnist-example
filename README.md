@@ -64,7 +64,7 @@ In this section you will start your [Google Cloud Shell][6] and clone the
   ```
   $ PROJECT_ID=$(gcloud config list project --format "value(core.project)")
   $ BUCKET="gs://${PROJECT_ID}-ml"
-  $ gsutil mkdir $BUCKET
+  $ gsutil mkdir -c regional -l us-central1 $BUCKET
   ```
 
 2. Upload MNIST dataset to the training bucket.
