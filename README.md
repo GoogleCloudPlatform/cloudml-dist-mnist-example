@@ -200,8 +200,7 @@ You can use the Datalab notebook to demonstrate the online prediction feature in
 3. Open a new notebook and execute the following command.
 
   ```
-  %%bash
-  git clone https://github.com/GoogleCloudPlatform/cloudml-dist-mnist-example
+  !git clone https://github.com/GoogleCloudPlatform/cloudml-dist-mnist-example
   ```
   
 4. Go back to the notebook list window and open `Online prediction example.ipynb` in `cloudml-dist-mnist-example/notebooks` folder.
