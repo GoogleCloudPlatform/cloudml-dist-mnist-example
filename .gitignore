@@ -1,0 +1,8 @@
+
+output/
+
+scripts/tmp/data/
+
+trainer/__pycache__/
+
+*.pyc
