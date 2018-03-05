@@ -16,7 +16,7 @@
 import argparse
 import os
 
-import model
+from trainer import model
 
 from tensorflow.contrib.learn import Experiment
 from tensorflow.contrib.learn.python.learn import learn_runner

@@ -18,7 +18,7 @@ from __future__ import division
 from __future__ import print_function
 
 import tensorflow as tf
-from tensorflow.python.estimator.model_fn import ModeKeys as Modes
+from tensorflow.contrib.learn.python.learn.estimators.model_fn import ModeKeys as Modes
 
 
 tf.logging.set_verbosity(tf.logging.INFO)
@@ -92,7 +92,7 @@ def _cnn_model_fn(features, labels, mode):
   logits = tf.layers.dense(inputs=dropout, units=10)
 
   # Define operations
-  if mode in (Modes.PREDICT, Modes.EVAL):
+  if mode in (Modes.INFER, Modes.EVAL):
     predicted_indices = tf.argmax(input=logits, axis=1)
     probabilities = tf.nn.softmax(logits, name='softmax_tensor')
 
@@ -103,7 +103,7 @@ def _cnn_model_fn(features, labels, mode):
         onehot_labels=tf.one_hot(label_indices, depth=10), logits=logits)
     tf.summary.scalar('OptimizeLoss', loss)
 
-  if mode == Modes.PREDICT:
+  if mode == Modes.INFER:
     predictions = {
         'classes': predicted_indices,
         'probabilities': probabilities
