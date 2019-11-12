@@ -72,7 +72,13 @@ In this section you will start your [Google Cloud Shell][6] and clone the
   $ gsutil mkdir -c regional -l us-central1 $BUCKET
   ```
 
-2. Upload MNIST dataset to the training bucket.
+2. Insatll TensorFlow
+
+  ```
+  sudo pip install tensorflow==1.2.1
+  ```
+
+3. Upload MNIST dataset to the training bucket.
 
   ```
   $ ./scripts/create_records.py 
@@ -84,7 +90,7 @@ Note: The dataset is stored in the [TFRecords][10] format.
 
 [10]: https://www.tensorflow.org/api_guides/python/python_io#tfrecords_format_details
 
-3. Submit a training job to Cloud Machine Learning.
+4. Submit a training job to Cloud Machine Learning.
 
   ```
   $ JOB_ID="${USER}_$(date +%Y%m%d_%H%M%S)"
@@ -119,7 +125,7 @@ Note: The dataset is stored in the [TFRecords][10] format.
   Saving dict for global step 10008: accuracy = 0.9931, global_step = 10008, loss = 0.0315906
   ```
 
-3. (Option) Visualize the training process with TensorBoard
+5. (Option) Visualize the training process with TensorBoard
 
   After the training, the summary data is stored in
   `${BUCKET}/${JOB_ID}` and you can visualize them with TensorBoard.
@@ -233,7 +239,7 @@ Optionally, you can train the model using VM instances running on
   ```
   $ sudo apt-get update
   $ sudo apt-get install -y python-pip python-dev
-  $ sudo pip install --upgrade tensorflow
+  $ sudo pip install numpy==1.11.0 tensorflow==1.2.1
   ```
 
 3. Create a bucket used for training jobs and upload MNIST dataset.
@@ -246,6 +252,9 @@ Optionally, you can train the model using VM instances running on
   $ PROJECT_ID=$(gcloud config list project --format "value(core.project)")
   $ BUCKET="gs://${PROJECT_ID}-ml"
   $ gsutil mkdir $BUCKET
+  ```
+  ```
+  $ sudo pip install tensorflow==1.2.1
   ```
   ```
   $ ./scripts/create_records.py 
