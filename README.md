@@ -6,6 +6,11 @@ This is an example to demonstrate how to write distributed TensorFlow code
  which can be used on both Cloud Machine Learning Engine and Google Compute Engine
  instances.
 
+## Note
+***This example codes use deprecated APIs. You are strongly encouraged to refer to [new examples][0] instead of this one.***
+
+[0]: https://github.com/GoogleCloudPlatform/ai-platform-samples/
+
 ## Products
 - [TensorFlow][2]
 - [Cloud Machine Learning Engine][3]
