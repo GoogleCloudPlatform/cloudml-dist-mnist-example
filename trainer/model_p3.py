@@ -140,18 +140,18 @@ def train_and_evaluate(output_dir,
                        train_steps=10000,
                        eval_steps=100,
                        **experiment_args):
-    estimator = build_estimator(output_dir)
-    train_spec=tf.estimator.TrainSpec(
-            input_fn=get_input_fn(
-                filename=os.path.join(data_dir, 'train.tfrecords'),
-                batch_size=train_batch_size),
-            max_steps=train_steps)
-    exporter = tf.estimator.LatestExporter('exporter', serving_input_fn)
-    eval_spec=tf.estimator.EvalSpec(
-            input_fn=get_input_fn(
-                filename=os.path.join(data_dir, 'test.tfrecords'),
-                batch_size=eval_batch_size),
-            steps=eval_steps,
-            exporters=exporter)
-    tf.estimator.train_and_evaluate(estimator, train_spec, eval_spec,
-                                    **experiment_args)
+  estimator = build_estimator(output_dir)
+  train_spec=tf.estimator.TrainSpec(
+          input_fn=get_input_fn(
+              filename=os.path.join(data_dir, 'train.tfrecords'),
+              batch_size=train_batch_size),
+          max_steps=train_steps)
+  exporter = tf.estimator.LatestExporter('exporter', serving_input_fn)
+  eval_spec=tf.estimator.EvalSpec(
+          input_fn=get_input_fn(
+              filename=os.path.join(data_dir, 'test.tfrecords'),
+              batch_size=eval_batch_size),
+          steps=eval_steps,
+          exporters=exporter)
+  tf.estimator.train_and_evaluate(estimator, train_spec, eval_spec,
+                                  **experiment_args)
