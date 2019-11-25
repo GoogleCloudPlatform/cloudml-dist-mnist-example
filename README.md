@@ -43,7 +43,7 @@ In this section you will start your [Google Cloud Shell][6] and clone the
 3. List the models to verify that the command returns an empty list:
 
   ```
-  $ gcloud ml-engine models list
+  $ gcloud ai-platform models list
   Listed 0 items.
   ```
 
@@ -72,16 +72,10 @@ In this section you will start your [Google Cloud Shell][6] and clone the
   $ gsutil mkdir -c regional -l us-central1 $BUCKET
   ```
 
-2. Insatll TensorFlow
+2. Upload MNIST dataset to the training bucket.
 
   ```
-  sudo pip install tensorflow==1.2.1
-  ```
-
-3. Upload MNIST dataset to the training bucket.
-
-  ```
-  $ ./scripts/create_records.py 
+  $ ./scripts_p3/create_records.py 
   $ gsutil cp /tmp/data/train.tfrecords ${BUCKET}/data/
   $ gsutil cp /tmp/data/test.tfrecords ${BUCKET}/data/
   ```
@@ -94,18 +88,19 @@ Note: The dataset is stored in the [TFRecords][10] format.
 
   ```
   $ JOB_ID="${USER}_$(date +%Y%m%d_%H%M%S)"
-  $ gcloud ml-engine jobs submit training ${JOB_ID} \
-      --package-path trainer \
-      --module-name trainer.task \
-      --staging-bucket ${BUCKET} \
-      --job-dir ${BUCKET}/${JOB_ID} \
-      --runtime-version 1.2 \
-      --region us-central1 \
-      --config config/config.yaml \
-      -- \
-      --data_dir ${BUCKET}/data \
-      --output_dir ${BUCKET}/${JOB_ID} \
-      --train_steps 10000
+  $ gcloud ai-platform jobs submit training ${JOB_ID} \
+        --package-path trainer \
+        --module-name trainer.task_p3 \
+        --staging-bucket ${BUCKET} \
+        --job-dir ${BUCKET}/${JOB_ID} \
+        --runtime-version 1.14 \
+        --python-version 3.5 \
+        --region us-central1 \
+        --config config/config.yaml \
+        -- \
+        --data_dir ${BUCKET}/data \
+        --output_dir ${BUCKET}/${JOB_ID} \
+        --train_steps 10000
   ```
 
   Note: `JOB_ID` can be arbitrary, but you can't reuse the same one.
@@ -151,14 +146,14 @@ Note: The dataset is stored in the [TFRecords][10] format.
 
   ```
   $ MODEL_NAME=MNIST
-  $ ORIGIN=$(gsutil ls ${BUCKET}/${JOB_ID}/export/Servo | tail -1)
-  $ gcloud ml-engine models create ${MODEL_NAME} --regions us-central1
+  $ ORIGIN=$(gsutil ls ${BUCKET}/${JOB_ID}/export/exporter | tail -1)
+  $ gcloud ai-platform models create ${MODEL_NAME} --regions us-central1
   $ VERSION_NAME=v1
-  $ gcloud ml-engine versions create \
+  $ gcloud ai-platform versions create \
       --origin ${ORIGIN} \
       --model ${MODEL_NAME} \
       ${VERSION_NAME}
-  $ gcloud ml-engine versions set-default --model ${MODEL_NAME} ${VERSION_NAME}
+  $ gcloud ai-platform versions set-default --model ${MODEL_NAME} ${VERSION_NAME}
   ```
 
   Note: `MODEL_NAME` ane `VERSION_NAME` can be arbitrary, but you can't
@@ -169,7 +164,7 @@ Note: The dataset is stored in the [TFRecords][10] format.
 2. Create a JSON request file.
 
   ```
-  $ ./scripts/make_request.py
+  $ ./scripts_p3/make_request.py
   ```
 
   This creates a JSON file `request.json` containing 10 test data for
@@ -178,7 +173,7 @@ Note: The dataset is stored in the [TFRecords][10] format.
 3. Submot an online prediction request.
 
   ```
-  $ gcloud ml-engine predict --model ${MODEL_NAME} --json-instances request.json
+  $ gcloud ai-platform predict --model ${MODEL_NAME} --json-instances request.json
   CLASSES  PROBABILITIES
   7        [3.437006127094938e-21, 5.562060376991084e-16, 2.5538862785511466e-19, 7.567420805782991e-17, 2.891652426709158e-16, 2.2750016241705544e-20, 1.837758172149778e-24, 1.0, 6.893573298530907e-19, 8.065571390565747e-15]
   2        [1.2471907477623206e-23, 2.291396136267388e-25, 1.0, 1.294716955176118e-32, 3.952643278911311e-25, 3.526924652059716e-36, 3.607279481567486e-25, 1.8093850397574458e-30, 7.008172489249426e-26, 2.6986217649454554e-29]
@@ -238,8 +233,9 @@ Optionally, you can train the model using VM instances running on
 
   ```
   $ sudo apt-get update
-  $ sudo apt-get install -y python-pip python-dev
-  $ sudo pip install numpy==1.11.0 tensorflow==1.2.1
+  $ sudo apt-get -y upgrade
+  $ sudo apt-get install -y python3-pip
+  $ sudo pip3 install tensorflow==1.14.0 gast==0.2.2
   ```
 
 3. Create a bucket used for training jobs and upload MNIST dataset.
@@ -254,10 +250,7 @@ Optionally, you can train the model using VM instances running on
   $ gsutil mkdir $BUCKET
   ```
   ```
-  $ sudo pip install tensorflow==1.2.1
-  ```
-  ```
-  $ ./scripts/create_records.py 
+  $ ./scripts_p3/create_records.py 
   $ gsutil cp /tmp/data/train.tfrecords ${BUCKET}/data/
   $ gsutil cp /tmp/data/test.tfrecords ${BUCKET}/data/
   ```
@@ -269,7 +262,7 @@ Optionally, you can train the model using VM instances running on
 
   ```
   $ gcloud config set compute/zone us-east1-c
-  $ ./scripts/start-training.sh $BUCKET
+  $ ./scripts_p3/start-training.sh $BUCKET
   ```
 
   Note: `us-east1-c` should be the zone of instances you have created.
@@ -278,7 +271,7 @@ Optionally, you can train the model using VM instances running on
   will be displayed as below.
   
   ```
-  Trained model is stored in gs://cloudml-sample-ml/job_170415_081023/export/Servo/1492245350557/
+  Trained model is stored in gs://cloudml-sample-ml/job_170415_081023/export/exporter/1492245350557/
   ```
   
 ## Clean up
