@@ -110,14 +110,7 @@ gcloud compute ssh master-0 --command "mkdir -p $WORKDIR"
 gcloud beta compute scp --recurse \
   /tmp/tf_config.json start-dist-mnist.sh ../trainer/ \
   master-0:$WORKDIR
-
 gcloud compute ssh master-0 --command "$WORKDIR/start-dist-mnist.sh $DATADIR $OUTDIR"
-#expect -c "
-#  spawn gcloud compute ssh master-0 --command \"$WORKDIR/start-dist-mnist.sh $DATADIR $OUTDIR\"
-#ji  expect -exact \"HOGEHOGE\"
-#"
-
-#expect -exact \"INFO:tensorflow:SavedModel written to: $BUCKET/$JOBNAME/export/exporter/\" {exit 0}
 
 # Cleanup
 echo "Done. Force stop remaining processes."
