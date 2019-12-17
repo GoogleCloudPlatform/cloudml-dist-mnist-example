@@ -219,7 +219,7 @@ Optionally, you can train the model using VM instances running on
  Google Compute Engine(GCE).
 1. Launch four VM instances with the following options.
 
-  - Hostname: ps-1, master-0, worker-0, worker-1
+  - Hostname: ps-0, master-0, worker-0, worker-1
   - OS image: ubuntu-1604-lts
   - Machine type: n1-standard-1
   - Identity and API access: Set access for each API, Storage = 'Read Write'
